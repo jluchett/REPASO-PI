@@ -3,6 +3,10 @@ const { Sequelize } = require('sequelize')
 const fs = require('fs')
 const path = require('path')
 
+const {
+  DB_USER, DB_PASSWORD, DB_HOST,
+} = process.env;
+
 const sequelize = new Sequelize(
   `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/repasopi`,
   {
@@ -37,7 +41,12 @@ sequelize.models = Object.fromEntries(capsEntries)
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
 
+const { Character, Episode } = sequelize.models;
+
 // Aca vendrian las relaciones
+
+Character.belongsToMany(Episode, { through: "character_episode"});
+Episode.belongsToMany(Character, { through: "character_episode"});
 
 module.exports = {
   ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
